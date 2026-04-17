@@ -1,5 +1,5 @@
 # Documentação de Aprendizado — EventFlow
-
+Objetivo do projeto: Solidificar conceitos e abordar novos tópicos de forma prática
 Registro dos conceitos estudados durante o desenvolvimento do projeto.
 Cada seção explica **o que é**, **por que foi usado**, **alternativas** e **armadilhas**.
 
