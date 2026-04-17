@@ -1,0 +1,82 @@
+/*
+  Tailwind v4: configuração via CSS, não via tailwind.config.js
+  @import "tailwindcss" injeta todas as utilities
+  @theme define as variáveis do design system — Tailwind transforma
+  --color-X em utilitários bg-X, text-X, border-X automaticamente
+*/
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,300..700&display=swap');
+
+/* ────────────────────────────────────────
+   DESIGN TOKENS
+   ──────────────────────────────────────── */
+@theme {
+  --color-canvas:      #0C0C10;
+  --color-surface:     #16161E;
+  --color-overlay:     #1E1E2A;
+  --color-rim:         rgba(255, 255, 255, 0.07);
+  --color-rim-strong:  rgba(255, 255, 255, 0.14);
+  --color-ink:         #E4E4EF;
+  --color-ink-dim:     #8888A8;
+  --color-amber:       #F59E0B;
+  --color-amber-dark:  #B45309;
+  --color-success:     #10B981;
+  --color-danger:      #EF4444;
+  --color-info:        #6366F1;
+  --font-sans:         'Inter', system-ui, sans-serif;
+}
+
+/* ────────────────────────────────────────
+   BASE
+   ──────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html  { scroll-behavior: smooth; }
+
+body {
+  background-color: #0C0C10;
+  color: #E4E4EF;
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root { min-height: 100vh; display: flex; flex-direction: column; }
+
+/* ────────────────────────────────────────
+   SCROLLBAR
+   ──────────────────────────────────────── */
+::-webkit-scrollbar        { width: 5px; }
+::-webkit-scrollbar-track  { background: #0C0C10; }
+::-webkit-scrollbar-thumb  { background: rgba(255,255,255,0.12); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
+
+/* ────────────────────────────────────────
+   UTILITÁRIOS CUSTOMIZADOS
+   ──────────────────────────────────────── */
+
+/* Gradiente de texto âmbar — para headings de destaque */
+.text-gradient {
+  background: linear-gradient(135deg, #F59E0B 0%, #FCD34D 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Skeleton loading */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #16161E 25%, #1E1E2A 50%, #16161E 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+  border-radius: 0.375rem;
+}
+
+/* Focus ring global — acessibilidade */
+:focus-visible {
+  outline: 2px solid #F59E0B;
+  outline-offset: 2px;
+}

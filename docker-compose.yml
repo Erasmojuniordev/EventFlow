@@ -1,0 +1,74 @@
+###############################################################
+# docker-compose.yml — EventFlow
+#
+# Sobe toda a infraestrutura com: docker-compose up -d
+# Para o tudo com: docker-compose down
+# Para o tudo E remove volumes (dados do banco): docker-compose down -v
+#
+# SERVIÇOS:
+#   postgres  — banco de dados
+#   pgadmin   — interface web para gerenciar o PostgreSQL
+#   api       — EventFlow.API (Fase 1: só postgres + api no docker)
+#
+# POR QUÊ docker-compose ao invés de rodar o PostgreSQL nativamente?
+# - Isolamento: cada projeto tem seu próprio banco, sem conflito de versões
+# - Portabilidade: qualquer dev clona o repo e roda com um comando
+# - Reprodutibilidade: "funciona na minha máquina" deixa de ser desculpa
+#
+# VOLUMES:
+# postgres_data persiste os dados entre restarts do container.
+# Sem volume: toda vez que o container é recriado, os dados somem.
+###############################################################
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: eventflow_postgres
+    environment:
+      POSTGRES_DB: eventflow_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres        # Só para dev — em produção usar secrets
+    ports:
+      - "5433:5432"                      # 5433 no host para evitar conflito com PostgreSQL nativo na 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: eventflow_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@eventflow.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"                        # Acessa em http://localhost:5050
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  # A API pode ser rodada localmente (dotnet run) enquanto só o banco está no Docker.
+  # Descomentar quando quiser dockerizar a API também (Fase posterior).
+  #
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: src/EventFlow.API/Dockerfile
+  #   container_name: eventflow_api
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=eventflow_dev;Username=postgres;Password=postgres
+  #     - JwtSettings__Secret=sua-secret-aqui-minimo-32-caracteres
+  #   ports:
+  #     - "5000:8080"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+
+volumes:
+  postgres_data:
+  pgadmin_data:
